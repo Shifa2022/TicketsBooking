@@ -46,3 +46,8 @@ IT IS IN THE FORM :
       "price": 100.0,
       "selected_users":0
     }
+
+FILE STRUCTURE:
+---------------
+index.py--- has the API AND DB 
+client--- has the frontend react app
