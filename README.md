@@ -1,6 +1,6 @@
 # TicketsBooking
 
-CREATING VIRTUAL EENVIRONMENT:
+CREATING VIRTUAL ENVIRONMENT:
 -----------------------------
 pip3 install virtualenv
 python -m virtualenv "name"
@@ -35,3 +35,14 @@ TO run the react app:
 ---------------------
 cd client 
 npm start
+
+DATA IS SENT THROUGH POSTMAN:
+-----------------------------
+IT IS IN THE FORM :
+    {
+       
+      "name": "1A", 
+      "occupied": false, 
+      "price": 100.0,
+      "selected_users":0
+    }
