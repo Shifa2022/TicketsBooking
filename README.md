@@ -50,4 +50,5 @@ IT IS IN THE FORM :
 FILE STRUCTURE:
 ---------------
 index.py--- has the API AND DB 
+
 client--- has the frontend react app
