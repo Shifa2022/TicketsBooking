@@ -6,6 +6,7 @@ import Main from './main';
 import Seats from './seats';
 import Registration from './Registration';
 import Login from './Login';
+import Ticket from './Ticket';
 import {BrowserRouter as Router,Routes,Route} from 'react-router-dom'
 import Navbar from './components/Navbar';
 import ProtectedRoutes from './components/ProtectedRoutes';
@@ -33,6 +34,7 @@ function App() {
         <Route path="/main" element={<Main/>}/>
         <Route path="/seats" element={<Seats/>}/>
         <Route path="/confirmation" element={<Confirmation/>}/>
+        <Route path='/ticket' element={<Ticket/>}/>
         </Route>
        
       </Routes>

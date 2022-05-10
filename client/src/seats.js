@@ -14,7 +14,7 @@ export default function Seats(){
         return JSON.parse(data)
       }else{
         return[]
-      }
+      }   
     }
     const getPricefromLs=()=>{
       const localData=localStorage.getItem('price');
@@ -37,9 +37,11 @@ export default function Seats(){
     const [cart, setCart] = useState(getDatafromLS());
     const [price,setPrice]=useState(getPricefromLs());
     // const [list, setList] = useState([]);
+   
     const getData = async () => {
       try{
-        const res = await fetch("http://127.0.0.1:5000/seats");
+        const movie=localStorage.getItem('movie_selected')
+        const res = await fetch("http://127.0.0.1:5000/seats/movieId/"+movie);
         const data = await res.json();
         setData(data.seats);
       }catch(error){

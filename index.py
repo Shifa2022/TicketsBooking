@@ -1,8 +1,9 @@
 
+from datetime import datetime
 from flask import Flask, request, jsonify,session
 from flask_sqlalchemy import SQLAlchemy 
 from flask_cors import CORS,cross_origin
-from sqlalchemy import true
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, true
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -15,17 +16,21 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///database.db'
 db = SQLAlchemy(app)
 
 class Seats(db.Model):
+
+    _tablename_ = 'seats'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(20))
     price=db.Column(db.Float)
     occupied=db.Column(db.Boolean,default=False,nullable=False)
     selected_users=db.Column(db.Integer)
+    movie_id=db.Column(db.Integer,ForeignKey('movie.id'))
 
-    def __init__(self, name,price,occupied,selected_users):
+    def __init__(self, name,price,occupied,selected_users,movie_id):
         self.name = name
         self.price=price
         self.occupied=occupied
         self.selected_users=selected_users
+        self.movie_id=movie_id
 
     def serialize(self):
         return {
@@ -33,12 +38,14 @@ class Seats(db.Model):
             "name": self.name,
             "price":self.price,
             "occupied":self.occupied,
-            "selected_users":self.selected_users
+            "selected_users":self.selected_users,
+            "movie_id":self.movie_id
             }
+
 
 class User(db.Model):
 
-    _tablename_ = 'usertable'
+    _tablename_ = 'users'
     id = db.Column(db.Integer, primary_key=True)
     name= db.Column(db.String(15))
     username = db.Column(db.String(15))
@@ -77,6 +84,77 @@ class Slot(db.Model):
             "user":self.user,
             }   
 
+
+class Movie(db.Model):
+    _tablename_ = 'movies'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(50))
+    time=db.Column(db.String(50))
+
+    def __init__(self,name,time):
+        self.name=name
+        self.time=time
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "name":self.name,
+            "time":self.time
+            }  
+
+class Ticket(db.Model):
+    _tablename_ = 'ticket'
+    id = db.Column(db.Integer, primary_key=True)
+    seat_id = db.Column(db.Integer,ForeignKey('seats.id'))
+    user_id = db.Column(db.Integer,ForeignKey('seats.selected_users'))
+    movie_id = db.Column(db.Integer,ForeignKey('seats.movie_id'))
+    # movie_name=db.Column(db.String(50),ForeignKey('movies.name'), nullable=False)
+
+    def __init__(self,id,seat_id,user_id,movie_id):
+        self.id=id,
+        self.seat_id=seat_id,
+        self.user_id=user_id,
+        self.movie_id=movie_id,
+        # self.movie_name=movie_name
+
+    def serialize(self):
+        return {
+            "id":self.id,
+            "seat_id":self.seat_id,
+            "user_id":self.user_id,
+            "movie_id":self.movie_id,
+            # "movie_name":self.movie_name
+            }  
+
+class History(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    name=db.Column(db.String(80))
+    email=db.Column(db.String(80))
+    seats=db.Column(db.String(80))
+    price=db.Column(db.Integer)
+    date=db.Column(db.String(80))
+
+    def __init__(self,name,email,seats,price,date):
+        self.name=name
+        self.email=email
+        self.seats=seats
+        self.price=price
+        self.date=date
+       
+
+    def serialize(self):
+        return {
+            "id": self.id,
+            "name":self.name,
+            "email":self.email,
+            "seats":self.seats,
+            "price":self.price,
+            "date":self.date
+
+            }  
+
+
+
 @app.route('/block', methods=['GET'])
 @cross_origin()
 def islot():
@@ -114,6 +192,18 @@ def delete():
 def index():
     return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.all()))})
 
+# Seats Routes
+@app.route('/seats/movieId/<int:movieId>', methods=['GET'])
+@cross_origin()
+def getSeatsByMovieId(movieId):
+    return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.filter(Seats.movie_id==movieId)))})
+    # return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.filter(Seats.movie_id==movieId)))})
+
+def getSeatsListOfDict(listOfseats):
+    seatsListOfdict = []
+    for seat in listOfseats:
+        seatsListOfdict.append(seat.serialize())
+
 @app.route('/seats', methods=['POST'])
 @cross_origin()
 def create_seats():
@@ -123,23 +213,62 @@ def create_seats():
     price=request.json['price']
     occupied=request.json['occupied']
     selected_users=request.json['selected_users']
-    seats=Seats(name,price,occupied,selected_users)
+    movie_id=request.json['movie_selected']
+    seats=Seats(name,price,occupied,selected_users,movie_id)
     db.session.add(seats)
     db.session.commit()
     return jsonify({'seats': seats.serialize()}), 201
 
 
+
+
+# @app.route('/update/<int:id>', methods=['POST'])
+# @cross_origin()
+# def update_seats(id):
+#             seat = Seats.query.get(id)
+#             seat.occupied=request.json.get('occupied',seat.occupied)
+#             seat.selected_users=request.json.get('user',seat.selected_users)
+#             db.session.commit()
+#             db.session.query(Slot).delete()
+#             db.session.commit()
+#             return jsonify({'seat': seat.serialize()})
+
+#update route 
 @app.route('/update/<int:id>', methods=['POST'])
 @cross_origin()
 def update_seats(id):
             seat = Seats.query.get(id)
-            seat.occupied=request.json.get('occupied',seat.occupied)
-            seat.selected_users=request.json.get('user',seat.selected_users)
-            db.session.commit()
-            db.session.query(Slot).delete()
-            db.session.commit()
-            return jsonify({'seat': seat.serialize()})
-       
+            if seat.selected_users==0:
+                seat.occupied=request.json.get('occupied',seat.occupied)
+                seat.selected_users=request.json.get('user',seat.selected_users)
+                db.session.commit()
+                db.session.query(Slot).filter(Slot.user==seat.selected_users).delete() 
+                db.session.commit()
+                # name=request.json['name']
+                # email=request.json['email']
+                # seats=request.json['seat']
+                # price=request.json['price1']
+                # date=datetime.today()
+                # order=History(name,email,seats,price,date)
+                # db.session.add(order)
+                # db.session.commit()
+                return jsonify({"status":200,"message":"reserved successfully"})
+            else:
+                return jsonify({"status": 400, "message": "seats already booked"})
+
+
+@app.route('/order',methods=['POST'])
+@cross_origin()
+def push():
+    name=request.json['name']
+    email=request.json['email']
+    seats=request.json['seat']
+    price=request.json['price1']
+    date=datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+    order=History(name,email,seats,price,date)
+    db.session.add(order)
+    db.session.commit()
+    return jsonify({"status":200,"message":"reserved successfully"})
 
 
  #User routes
@@ -182,6 +311,66 @@ def login():
                 return jsonify({"message": "user password wrong", "status": 400})
         else:
             return jsonify({"message": "user details doesnt exist", "status": 400,"flag2":"false"})
+
+# movie routes
+@app.route('/movies', methods=['GET'])
+@cross_origin()
+def movie():
+    return jsonify({'movies': list(map(lambda movies: movies.serialize(), Movie.query.all()))})
+
+@app.route('/movies/<string:time>', methods=['GET'])
+@cross_origin()
+def moviebyTime(time):
+     return jsonify({'movies': list(map(lambda movies: movies.serialize(), Movie.query.filter(Movie.time==time)))})
+
+def getmoviebyTime(movieTime):
+    ListOfmovie = []
+    for movie in movieTime:
+        ListOfmovie.append(movie.serialize())
+
+
+@app.route('/movies', methods=['POST'])
+@cross_origin()
+def create_movie():
+    name = request.json['movie_name']
+    time=request.json['time']
+    # price=request.json['price']
+    # occupied=request.json['occupied']
+    # selected_users=request.json['selected_users']
+    # seats=Seats(name,price,occupied,selected_users)
+    movies=Movie(name,time)
+    # if movies:
+    #     create_seats()
+        
+
+    db.session.add(movies)
+    db.session.commit()
+    return jsonify({'movies': movies.serialize()}), 201
+
+
+@app.route('/history',methods=['POST'])
+@cross_origin()
+def history():
+    # name=request.json['name']
+    # email=request.json['email']
+    # seats=request.json['seats']
+    # price=request.json['price']
+    # date=datetime.today()
+    # order=History(name,email,seats,price,date)
+    # db.session.add(order)
+    # db.session.commit()
+    # return jsonify({'history': order.serialize()}), 201
+     user = User.query.filter_by(email = request.json['email'])
+     if user:
+         return jsonify({'user': user.serialize()})
+     else:
+         return jsonify({"message":"You Don't seem to have any recent bookings", "status": 400}) 
+
+
+@app.route('/history', methods=['GET'])
+@cross_origin()
+def order():
+    return jsonify({'history': list(map(lambda seat: seat.serialize(), History.query.all()))}),200
 
 
 if __name__=="__main__":

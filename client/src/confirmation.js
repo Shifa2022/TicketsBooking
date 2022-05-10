@@ -4,6 +4,9 @@ import './App.css'
 import { useNavigate } from 'react-router-dom'
 export default function Confirmation(){
 
+
+  
+
 const Ref = useRef(null);
 const [timer, setTimer] = useState('00:00:00');
 
@@ -87,6 +90,10 @@ const navigate=useNavigate();
       const log=JSON.parse(res)
 
   function updateSeats(){
+    let seats=[]
+    for(var j=0;j<cart.length;j++){
+      seats[j]=cart[j].name
+    }
         for (var i = 0; i < cart.length; i++) {
         const id= cart[i].id;
         // console.log(id)
@@ -103,14 +110,37 @@ const navigate=useNavigate();
     }).then(response => response.json())
     .catch(error => console.log(error))
   }
-  localStorage.removeItem("cart")
-  localStorage.removeItem("price")
-  localStorage.removeItem("seats_wanted")
+
+  const name=log.name
+  const email=log.email
+  const seat=seats.toString()
+  const price1=price
+  const order={name,email,seat,price1}
+  fetch('http://127.0.0.1:5000/order',{
+   method:"POST",
+   headers:{
+    'Content-Type':'application/json'
+    },
+    body:JSON.stringify(order)
+  }).then(response => response.json())
+  .catch(error => console.log(error))
+
+
+  // localStorage.removeItem("cart")
+  // localStorage.removeItem("price")
+ 
+  // localStorage.removeItem("seatsSelected")
   localStorage.removeItem("seatsSelected")
   clearInterval(Ref.current);
   window.confirm("Seats Reserved Successfully")
-  navigate("/main")
+//storing time 
+  const current = new Date();
+  const date = `${current.getDate()}/${current.getMonth()+1}/${current.getFullYear()}`;
+localStorage.setItem("date",date)
+  navigate("/ticket")
       }
+
+
       function deleteblock(){
         for (var i = 0; i < cart.length; i++) {
         const available= cart[i].id;
@@ -125,6 +155,7 @@ const navigate=useNavigate();
     }).then(response => response.json())
     .catch(error => console.log(error))
   }
+ 
   clearInterval(Ref.current);
   navigate("/seats")
 } 

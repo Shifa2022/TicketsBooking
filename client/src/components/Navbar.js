@@ -44,6 +44,9 @@ return (
 		<NavLink to='/confirmation' activeStyle>
 			Confirmation
 		</NavLink>
+		<NavLink to='/ticket' activeStyle>
+			Ticket
+		</NavLink>
 		{navbarUserIsLogged?
         <>
         <NavLink onClick={handleLogout} to='/login' activeStyle>
