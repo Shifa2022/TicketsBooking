@@ -13,6 +13,7 @@ class Main extends Component {
     };
     this.handleChange = this.handleChange.bind(this);
     this.handleMovie = this.handleMovie.bind(this);
+    this.handleMovie = this.handleMovie.bind(this);
   }
 
   handleChange(event) {
@@ -23,18 +24,23 @@ class Main extends Component {
 
 
   handleMovie(event) {
-    this.setState({value: event.target.value});
+    // this.setState({value: event.target.value});
+    // this.setState({key: event.target.key});
     
+    let movie=JSON.parse(event.target.value);
  
-    let movie=event.target.value;
-    // let moviename=event.target.name;
-    // console.error(moviename)
+    let moviename=movie.name;
+    let movieid = movie.id;
   
-    localStorage.setItem('movie_selected',movie)
-    // localStorage.setItem('moviename_selected',moviename)
+  
+    localStorage.setItem('movie_name',moviename)
+    localStorage.setItem('movie_id',movieid)
+  
 
       
   }
+
+  
   
   // getMovie = async () => {
   //   try{
@@ -66,14 +72,22 @@ class Main extends Component {
             moviesList: data.movies
         });
         console.log(this.state.moviesList)
+        
+        // list(map(lambda z: list(filter(None,z)),moviesList.name))
+        // localStorage.setItem("movie_name",JSON.stringify(object))
     // });
 }
+
+
 render () {
   // const  moviesList  = this.state;
   //console.log(this.state.moviesList)
-let movies = this.state.moviesList;
+      let movies = this.state.moviesList;
+
         let optionItems = movies.map((movie) =>
-                <option value={movie.id} >{movie.name}</option>
+        
+                // <option value={movie.id} key={movie.name}>{movie.name}</option>
+                <option value={JSON.stringify(movie)}>{movie.name}</option>
             );
 
         return (
@@ -82,10 +96,10 @@ let movies = this.state.moviesList;
           <div className='book'>
             <div>
             <p>Pick a movie:
-              <select onChange={this.handleMovie}>
+              <select onChange={this.handleMovie} >
                 {optionItems}
                 {/* {optionItems.map(movie => <div>{movie.name}</div>)} */}
-
+                 
               </select>
               </p>
             </div>

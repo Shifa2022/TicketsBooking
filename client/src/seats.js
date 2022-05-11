@@ -40,7 +40,7 @@ export default function Seats(){
    
     const getData = async () => {
       try{
-        const movie=localStorage.getItem('movie_selected')
+        const movie=localStorage.getItem('movie_id')
         const res = await fetch("http://127.0.0.1:5000/seats/movieId/"+movie);
         const data = await res.json();
         setData(data.seats);
@@ -56,6 +56,7 @@ export default function Seats(){
     }, [cart,price,seat_selected]);
 
     let seats_wanted=localStorage.getItem("seats_wanted")
+    
     const addDevice=(e,data)=>{
       
       const checkTicket=cart.filter((item)=>item.id===data.id);

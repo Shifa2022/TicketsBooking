@@ -45,7 +45,7 @@ input{
 h1{
   font-weight: 400;
   text-transform: capitalize;
-  color: aqua;
+  color: rgb(0, 0, 0);
   margin-bottom: 20px;
 }
 .screen{
