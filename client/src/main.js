@@ -83,6 +83,7 @@ render () {
   // const  moviesList  = this.state;
   //console.log(this.state.moviesList)
       let movies = this.state.moviesList;
+      
 
         let optionItems = movies.map((movie) =>
         

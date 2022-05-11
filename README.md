@@ -87,6 +87,9 @@ select * from seat where movie_id=1 (old one)
 
 
 table 
-theatre- id,name
-showtimings-id,time(string)
-seats-theatre_id(FK),showtimings_id(FK)
+<!-- theatre- id,name
+show-id,time(string) -->
+<!-- seats-theatre_id(FK),show_id(FK) -->
+In seats API add condition in existing filter(seats.theatre_id==something && seats.show_id==something)----
+add seats,theatre,show using create API
+make ticket printable

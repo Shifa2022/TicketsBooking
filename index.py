@@ -3,7 +3,7 @@ from datetime import datetime
 from flask import Flask, request, jsonify,session
 from flask_sqlalchemy import SQLAlchemy 
 from flask_cors import CORS,cross_origin
-from sqlalchemy import ForeignKey, ForeignKeyConstraint, true
+from sqlalchemy import ForeignKey, ForeignKeyConstraint, PrimaryKeyConstraint, true
 from werkzeug.security import generate_password_hash, check_password_hash
 
 
@@ -24,13 +24,17 @@ class Seats(db.Model):
     occupied=db.Column(db.Boolean,default=False,nullable=False)
     selected_users=db.Column(db.Integer)
     movie_id=db.Column(db.Integer,ForeignKey('movie.id'))
+    theatre_id=db.Column(db.Integer,ForeignKey('theatre.id'))
+    show_id=db.Column(db.Integer,ForeignKey('show.id'))
 
-    def __init__(self, name,price,occupied,selected_users,movie_id):
+    def __init__(self, name,price,occupied,selected_users,movie_id,theatre_id, show_id):
         self.name = name
         self.price=price
         self.occupied=occupied
         self.selected_users=selected_users
         self.movie_id=movie_id
+        self.theatre_id=theatre_id
+        self.show_id=show_id
 
     def serialize(self):
         return {
@@ -39,7 +43,10 @@ class Seats(db.Model):
             "price":self.price,
             "occupied":self.occupied,
             "selected_users":self.selected_users,
-            "movie_id":self.movie_id
+            "movie_id":self.movie_id,
+            "theatre_id":self.theatre_id,
+            "show_id":self.show_id
+
             }
 
 
@@ -89,17 +96,17 @@ class Movie(db.Model):
     _tablename_ = 'movies'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(50))
-    time=db.Column(db.String(50))
+   
 
-    def __init__(self,name,time):
+    def __init__(self,name):
         self.name=name
-        self.time=time
+       
 
     def serialize(self):
         return {
             "id":self.id,
             "name":self.name,
-            "time":self.time
+           
             }  
 
 class Ticket(db.Model):
@@ -153,6 +160,37 @@ class History(db.Model):
 
             }  
 
+class Theatre(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    tname=db.Column(db.String(80))
+
+    def __init__(self,tname):
+        self.tname=tname
+    
+    def serialize(self):
+        return{
+            "id":self.id,
+            "tname":self.tname
+        }
+
+
+
+class Show(db.Model):
+    id=db.Column(db.Integer,primary_key=True)
+    time=db.Column(db.String(80))
+
+    def __init__(self,time):
+        self.time=time
+    
+    def serialize(self):
+        return{
+            "id":self.id,
+            "time":self.time
+        }
+
+        
+        
+
 
 
 @app.route('/block', methods=['GET'])
@@ -196,13 +234,38 @@ def index():
 @app.route('/seats/movieId/<int:movieId>', methods=['GET'])
 @cross_origin()
 def getSeatsByMovieId(movieId):
-    return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.filter(Seats.movie_id==movieId)))})
-    # return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.filter(Seats.movie_id==movieId)))})
-
+    
+    return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.filter(Seats.movie_id==movieId )))})
+   
 def getSeatsListOfDict(listOfseats):
     seatsListOfdict = []
     for seat in listOfseats:
         seatsListOfdict.append(seat.serialize())
+
+@app.route('/seats/movieId/<int:movieId>/theatreid/<int:theatreId>/showid/<int:showid>', methods=['GET'])
+@cross_origin()
+# def getSeatsByMovieId(movieId,theatreid,showid):
+def getSeats(movieId,theatreId,showid):
+    return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.filter(Seats.movie_id==movieId , Seats.theatre_id==theatreId , Seats.show_id==showid )))})
+        # In seats API add condition in existing filter(seats.theatre_id==something && seats.show_id==something)
+    # /seats/movieId/<int:movieId>/theatreid/<int:movieId>/showid/<int:movieId>
+    # path variable
+    # return jsonify({'seats': list(map(lambda seat: seat.serialize(), Seats.query.filter(Seats.movie_id==movieId)))})
+
+# @app.route('/seats', methods=['POST'])
+# @cross_origin()
+# def create_seats():
+#     if not request.json or not 'name' in request.json:
+#         return jsonify({"status": 400, "message": "Bad Request"})
+#     name = request.json['name']
+#     price=request.json['price']
+#     occupied=request.json['occupied']
+#     selected_users=request.json['selected_users']
+#     movie_id=request.json['movie_selected']
+#     seats=Seats(name,price,occupied,selected_users,movie_id)
+#     db.session.add(seats)
+#     db.session.commit()
+#     return jsonify({'seats': seats.serialize()}), 201
 
 @app.route('/seats', methods=['POST'])
 @cross_origin()
@@ -214,7 +277,9 @@ def create_seats():
     occupied=request.json['occupied']
     selected_users=request.json['selected_users']
     movie_id=request.json['movie_selected']
-    seats=Seats(name,price,occupied,selected_users,movie_id)
+    theatre_id=request.json['theatre_id']
+    show_id=request.json['show_id']
+    seats=Seats(name,price,occupied,selected_users,movie_id,theatre_id,show_id)
     db.session.add(seats)
     db.session.commit()
     return jsonify({'seats': seats.serialize()}), 201
@@ -318,35 +383,58 @@ def login():
 def movie():
     return jsonify({'movies': list(map(lambda movies: movies.serialize(), Movie.query.all()))})
 
-@app.route('/movies/<string:time>', methods=['GET'])
-@cross_origin()
-def moviebyTime(time):
-     return jsonify({'movies': list(map(lambda movies: movies.serialize(), Movie.query.filter(Movie.time==time)))})
+# @app.route('/movies/<string:time>', methods=['GET'])
+# @cross_origin()
+# def moviebyTime(time):
+#      return jsonify({'movies': list(map(lambda movies: movies.serialize(), Movie.query.filter(Movie.time==time)))})
 
-def getmoviebyTime(movieTime):
-    ListOfmovie = []
-    for movie in movieTime:
-        ListOfmovie.append(movie.serialize())
+# def getmoviebyTime(movieTime):
+#     ListOfmovie = []
+#     for movie in movieTime:
+#         ListOfmovie.append(movie.serialize())
 
 
 @app.route('/movies', methods=['POST'])
 @cross_origin()
 def create_movie():
     name = request.json['movie_name']
-    time=request.json['time']
-    # price=request.json['price']
-    # occupied=request.json['occupied']
-    # selected_users=request.json['selected_users']
-    # seats=Seats(name,price,occupied,selected_users)
-    movies=Movie(name,time)
-    # if movies:
-    #     create_seats()
-        
+    movies=Movie(name)
 
     db.session.add(movies)
     db.session.commit()
     return jsonify({'movies': movies.serialize()}), 201
 
+@app.route('/theatre', methods=['GET'])
+@cross_origin()
+def theatre():
+    return jsonify({'theatre': list(map(lambda theatre: theatre.serialize(), Theatre.query.all()))})
+
+
+@app.route('/theatre', methods=['POST'])
+@cross_origin()
+def create_theatre():
+    name = request.json['theatre_name']
+    theatre=Theatre(name)
+
+    db.session.add(theatre)
+    db.session.commit()
+    return jsonify({'movies': theatre.serialize()}), 201
+
+@app.route('/show', methods=['GET'])
+@cross_origin()
+def show():
+    return jsonify({'show': list(map(lambda show: show.serialize(), Show.query.all()))})
+
+
+@app.route('/show', methods=['POST'])
+@cross_origin()
+def create_show():
+    time = request.json['time']
+    show=Show(time)
+
+    db.session.add(show)
+    db.session.commit()
+    return jsonify({'show': show.serialize()}), 201
 
 @app.route('/history',methods=['POST'])
 @cross_origin()
