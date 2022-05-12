@@ -82,22 +82,46 @@ select{
   margin-left: 20px;
 }
 .book{
-  margin-top: 100px;
+  margin-top: 70px;
   align-items: center;
 }
 
 .route{
-  background-color: #4CAF50; /* Green */
+  background-color: #0c947d; /* Green */
   border: none;
   color: white;
   padding: 8px 15px;
   width: 200px;
-  margin-right: 220px;
-  /* margin-left: 100px; */
-  text-align: center;
+  /* margin-right: 220px; */
+  margin-left: 100px;
+  text-align: left;
   text-decoration: none;
   display: inline;
+  font-size: 14px;
+
+}
+
+.form_class{
+  text-align: left;
   font-size: 16px;
+}
+
+.option{
+ 
+  margin-right: 40px;
+  margin-bottom: 100px;
+  align-items: center;
+}
+
+.font{
+  text-align: left;
+}
+
+.arrow{
+  width: 50px;
+  height: 20px;
+  align-items: center;
+  text-align: left;
 
 }
 .submit{
@@ -143,7 +167,7 @@ margin-bottom: 26px;
 .form {
   position: relative;
   z-index: 1;
-  background: #FFFFFF;
+  background: #a4b955;
   max-width: 360px;
   margin: 0 auto 100px;
   padding: 45px;
@@ -182,7 +206,7 @@ margin-bottom: 26px;
   font-size: 12px;
 }
 .form .message a {
-  color: #4CAF50;
+  color: #8cc98e;
   text-decoration: none;
 }
 
@@ -228,3 +252,80 @@ margin-bottom: 26px;
 .select.on~.select.on::before{
   content: ',';
 }
+
+
+
+
+/*  */
+
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;900&display=swap');
+
+body {
+  margin: 0;
+  width: 100vw;
+  height: 100vh;
+  background: #e8f0f1;
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-content: center;
+  place-items: center;
+  overflow: hidden;
+  font-family: poppins;
+}
+
+.container {
+  position: relative;
+  width: 350px;
+  height: 600px;
+  border-radius: 20px;
+  padding: 40px;
+  box-sizing: border-box;
+  background: #9dcfd8;
+  box-shadow: 14px 14px 20px #cbced1, -14px -14px 20px white;
+}
+
+
+
+
+.inputs {
+  text-align: left;
+  margin-top: 30px;
+}
+
+/* label, input, button {
+  display: block;
+  width: 100%;
+  padding: 0;
+  border: none;
+  outline: none;
+  box-sizing: border-box;
+} */
+
+
+
+label:nth-of-type(2) {
+  margin-top: 12px;
+}
+
+input::placeholder {
+  color: gray;
+}
+
+input {
+  background: #ecf0f3;
+  padding: 10px;
+  padding-left: 20px;
+  height: 50px;
+  font-size: 14px;
+  border-radius: 50px;
+  box-shadow: inset 6px 6px 6px #cbced1, inset -6px -6px 6px white;
+}
+
+
+
+button:hover {
+  box-shadow: none;
+}
+
+

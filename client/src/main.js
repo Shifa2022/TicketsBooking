@@ -19,7 +19,7 @@ class Main extends Component {
   }
 
   handleChange(event) {
-    this.setState({value: event.target.value});
+    // this.setState({value: event.target.value});
     let seat=event.target.value;
     localStorage.setItem('seats_wanted',seat)   
   }
@@ -126,7 +126,7 @@ render () {
         let optionItems = movies.map((movie) =>
         
               
-                <option value={JSON.stringify(movie)}>{movie.name}</option>
+                <option className='option' value={JSON.stringify(movie)}>{movie.name}</option>
             );
 
             let theatre = this.state.theatreList;
@@ -144,23 +144,24 @@ render () {
                 let optionshow = show.map((shows) =>
                 
                       
-                        <option value={JSON.stringify(shows)}>{shows.time}</option>
+                        <option className='option' value={JSON.stringify(shows)}>{shows.time}</option>
                     );
             
 
         return (
       <>
           {/* <Main state={this.state} /> */}
+          <div class="container">
           <div className='book'>
             <div>
-            <p>Pick a movie:
+            <p className='font'>Pick a movie:
               <select onChange={this.handleMovie} >
                 {optionItems}
                 {/* {optionItems.map(movie => <div>{movie.name}</div>)} */} 
               </select>
               </p>
 
-              <p>Pick a Theatre:
+              <p className='font'>Pick a Theatre:
               <select onChange={this.handleTheatre} >
                 {optiontheatre}
                 {/* {optionItems.map(movie => <div>{movie.name}</div>)} */} 
@@ -168,7 +169,7 @@ render () {
               </p>
 
 
-              <p>Pick a Time:
+              <p className='font'>Pick a Time:
               <select onChange={this.handleTime} >
                 {optionshow}
                 {/* {optionItems.map(movie => <div>{movie.name}</div>)} */} 
@@ -178,10 +179,10 @@ render () {
     
          
 
-            <form>No of Seats needed:
+            <form className='form_class'>No of Seats needed:
               <label>
 
-                <input type="number" max={10} min={0} onChange={this.handleChange} />
+                <input type="number" max={10} min={0} onChange={this.handleChange}  className="arrow"/>
 
               </label>
             </form>
@@ -195,6 +196,7 @@ render () {
               }}>
               Next
             </Link>
+          </div>
           </div>
       </>
       );

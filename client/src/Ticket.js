@@ -18,6 +18,14 @@ let movies=[]
       movies[j]=cart[j].name
     }
 
+//     var content = document.getElementById("ifmcontentstoprint");
+// var pri = document.getElementById("ifmcontentstoprint").contentWindow;
+// pri.document.open();
+// pri.document.write(content.innerHTML);
+// pri.document.close();
+// pri.focus();
+// pri.print();
+
   return (
     <>
 <div class="box">
@@ -33,8 +41,14 @@ let movies=[]
   <div class='total clearfix'>
     <h2>Total : <p>Rs/-{price} </p></h2>
   </div>
+ 
   </div>
+  <div>
+        <button onClick={() => window.print()}>PRINT</button>
+        
+      </div>
 </div>
+
 </>
 );
 }
