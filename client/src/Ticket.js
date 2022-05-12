@@ -18,13 +18,7 @@ let movies=[]
       movies[j]=cart[j].name
     }
 
-//     var content = document.getElementById("ifmcontentstoprint");
-// var pri = document.getElementById("ifmcontentstoprint").contentWindow;
-// pri.document.open();
-// pri.document.write(content.innerHTML);
-// pri.document.close();
-// pri.focus();
-// pri.print();
+
 
   return (
     <>
