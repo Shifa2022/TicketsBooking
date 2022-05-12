@@ -41,7 +41,9 @@ export default function Seats(){
     const getData = async () => {
       try{
         const movie=localStorage.getItem('movie_id')
-        const res = await fetch("http://127.0.0.1:5000/seats/movieId/"+movie);
+        const theatre=localStorage.getItem("theatre_id")
+        const show=localStorage.getItem("show_id")
+        const res = await fetch("http://127.0.0.1:5000/seats/movieId/"+movie+"/theatreid/"+theatre+"/showid/"+show);
         //  const res = await fetch("http://127.0.0.1:5000/seats/movieId/"+movie+"/thatreid/"+theatreid+/showid/+showid);
         // const theatreid=from localstorage
         // const showid= from ,localstorage

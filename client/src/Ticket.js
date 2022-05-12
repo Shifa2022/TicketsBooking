@@ -12,6 +12,7 @@ let price=localStorage.getItem("price")
 const res=localStorage.getItem("cart")
 let cart=JSON.parse(res)
 
+
 let movies=[]
     for(var j=0;j<cart.length;j++){
       movies[j]=cart[j].name
